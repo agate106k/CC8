@@ -53,6 +53,10 @@ let rec trans_dec ast nest tenv env = match ast with
                  ^ epilogue              (* エピローグ *)
    (* 変数宣言の処理 *)
  | VarDec (t,s) -> ()
+    (* 初期化の処理 *)
+ | VarDecInit (t, s, e) ->
+  let code = trans_exp e nest tenv env in
+  output := !output ^ "\tmovq %rax, " ^ (offset s env) ^ "(%rbp)\n" ^ code
    (* 型宣言の処理 *)
  | TypeDec (s,t) -> 
       let entry = tenv s in

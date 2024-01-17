@@ -65,6 +65,11 @@ let rec type_dec ast (nest,addr) tenv env =
     (* 型宣言の処理 *)
     | TypeDec (s,t) -> let tenv' = update s (NAME (s,ref None)) tenv in (tenv', env, addr)
     | _ -> raise (Err "internal error")
+    (* 初期化の処理 *)
+    | VarDecInit (t, s, e) ->
+     let ty = create_ty t tenv in
+     if ty != (type_exp e env) then raise (TypeErr "type error in variable initialization");
+     (tenv, update s (VarEntry {ty= ty; offset=addr-8; level=nest}) env, addr-8)
 and type_decs dl nest tenv env =
          List.fold_left 
                 (fun (tenv,env,addr) d ->  type_dec d (nest,addr) tenv env) (tenv,env,0) dl
