@@ -108,5 +108,6 @@ cond : expr EQ expr  { CallFunc ("==", [$1; $3]) }
      | expr LT expr  { CallFunc ("<", [$1; $3]) }
      | expr GE expr  { CallFunc (">=", [$1; $3]) }
      | expr LE expr  { CallFunc ("<=", [$1; $3]) }
+     | error { failwith "Error in cond rule" }
      ;
 %%
