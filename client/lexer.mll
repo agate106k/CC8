@@ -31,9 +31,7 @@ rule lexer = parse
 | '+'                     { PLUS }
 | '-'                     { MINUS }
 | '*'                     { TIMES }
-| '%'                     { PERCENT }
 | '/'                     { DIV }
-| '^'                     { POW }
 | '{'                     { LB  }
 | '}'                     { RB  }
 | '['                     { LS }
@@ -42,7 +40,6 @@ rule lexer = parse
 | ')'                     { RP  }
 | ','                     { COMMA }
 | ';'                     { SEMI }
-| "++"                    { INCREMENT }
 | [' ' '\t' '\n']         { lexer lexbuf }(* eat up whitespace *)
 | _                       { error }
 | eof                     { raise End_of_file }
