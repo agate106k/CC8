@@ -37,26 +37,29 @@ and ast_typ ast = match ast with
       | IntTyp -> "IntTyp"
       | VoidTyp -> "VoidTyp"
 
-let main () =
-  (* Open a file, or use standard input if no file is specified *)
-  let cin = if Array.length Sys.argv > 1 then open_in Sys.argv.(1)
-            else stdin in
-  let lexbuf = Lexing.from_channel cin in
-  try
-    (* Parse the input and print the resulting abstract syntax tree *)
-    print_string (ast_stmt (Parser.prog Lexer.lexer lexbuf)); 
-    print_string "\n";
-    close_in cin  (* Close the input channel *)
-  with
-  | Parsing.Parse_error ->
-    (* Handling parse errors *)
-    let curr = lexbuf.Lexing.lex_curr_p in
-    let line = curr.Lexing.pos_lnum in
-    let tok = Lexing.lexeme lexbuf in
-    Printf.printf "Syntax error at line %d, token '%s'\n" line tok;
-    close_in cin;  (* Close the input channel *)
-    exit 1  (* Exit with an error code *)
-
+      let main () =
+        let cin = if Array.length Sys.argv > 1 then open_in Sys.argv.(1)
+                  else stdin in
+        let lexbuf = Lexing.from_channel cin in
+        try
+          print_string (ast_stmt (Parser.prog Lexer.lexer lexbuf)); 
+          print_string "\n";
+          close_in cin
+        with
+        | Parsing.Parse_error ->
+            let l = (Lexing.lexeme_start_p lexbuf).pos_lnum in
+            let c = (Lexing.lexeme_start_p lexbuf).pos_cnum - (Lexing.lexeme_start_p lexbuf).pos_bol in
+            let m = Lexing.lexeme lexbuf in
+            print_string (sprintf "Syntax error: Parsing Failed at line %d, column %d: %s\n" l c m);
+            close_in cin;
+            exit 1
+        | Lexer.No_such_symbol (num, msg) ->
+            let l = (Lexing.lexeme_start_p lexbuf).pos_lnum in
+            let c = (Lexing.lexeme_start_p lexbuf).pos_cnum - (Lexing.lexeme_start_p lexbuf).pos_bol in
+            let m = Lexing.lexeme lexbuf in
+            print_string (sprintf "Syntax error: Unexpected Token at line %d, column %d: %s\n" l c m);
+            close_in cin;
+            exit 1
 (* Execute the main function *)
 let _ =
          main ();
