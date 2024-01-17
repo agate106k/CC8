@@ -7,6 +7,7 @@ and stmt = Assign of var * exp
         | CallProc of id * (exp list)
         | Block of (dec list) * (stmt list)
         | If of exp * stmt * (stmt option)
+        | DoWhile of stmt * exp
         | While of exp * stmt
         | NilStmt
 and exp = VarExp of var | StrExp of string | IntExp of int 

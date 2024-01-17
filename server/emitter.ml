@@ -144,6 +144,16 @@ and trans_stmt ast nest tenv env =
                                                 ^ sprintf "L%d:\n" l1
                                                 ^ trans_stmt s2 nest tenv env 
                                                 ^ sprintf "L%d:\n" l2
+
+                  (* do-while文のコード *)
+                  | DoWhile (s, e) ->
+                                              let (condCode, l1) = trans_cond e nest env in
+                                              let l2 = incLabel() in
+                                                  sprintf "L%d:\n" l2
+                                                ^ trans_stmt s nest tenv env
+                                                ^ condCode
+                                                ^ sprintf "\tjne L%d\n" l2
+                                                ^ sprintf "L%d:\n" l1
                   (* while文のコード *)
                   | While (e,s) -> let (condCode, l1) = trans_cond e nest env in
                                      let l2 = incLabel() in
