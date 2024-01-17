@@ -10,6 +10,8 @@ let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9']*
 rule lexer = parse
 | digit+ as num  { NUM (int_of_string num) }
 | "if"                    { IF }
+| "for"                   { FOR }
+| ".."                    { DOTDOT}
 | "else"                  { ELSE }
 | "while"                 { WHILE }
 | "scan"                  { SCAN }
@@ -44,8 +46,7 @@ rule lexer = parse
 | ','                     { COMMA }
 | ';'                     { SEMI }
 | "++"                    { INCREMENT }
-| "for"                   { FOR }
-| ".."                    { DOTDOT }
+
 | [' ' '\t' '\n']         { lexer lexbuf }(* eat up whitespace *) 
 | eof                     { raise End_of_file }
 | _                       { raise No_such_symbol }
