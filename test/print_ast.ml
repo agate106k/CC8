@@ -69,7 +69,7 @@ let main () =
          let m = Lexing.lexeme lexbuf in
          sprintf "Syntax error: Parsing Failed at line %d, column %d: %s\n" l c
            m)
-  | Lexer.No_such_symbol (num, msg) ->
+  | Lexer.No_such_symbol ->
       print_string
         (let l = (Lexing.lexeme_start_p lexbuf).pos_lnum in
          let c =
