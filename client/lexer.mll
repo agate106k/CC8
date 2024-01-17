@@ -41,5 +41,5 @@ rule lexer = parse
 | ','                     { COMMA }
 | ';'                     { SEMI }
 | [' ' '\t' '\n']         { lexer lexbuf }(* eat up whitespace *)
-| _                       { ERROR }
+| _ as c { Printf.eprintf "Unexpected character %c\n" c; ERROR }
 | eof                     { raise End_of_file }
