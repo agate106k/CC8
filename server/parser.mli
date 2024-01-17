@@ -36,6 +36,8 @@ type token =
   | POW
   | INCREMENT
   | PLUS_ASSIGN
+  | FOR
+  | DOTDOT
 
 val prog :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Ast.stmt
