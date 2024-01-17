@@ -54,12 +54,14 @@ let rec trans_dec ast nest tenv env = match ast with
    (* 変数宣言の処理 *)
  | VarDec (t,s) -> ()
     (* 初期化の処理 *)
-    | VarDecInit (t, s, e) -> 
-      let code = trans_exp e nest tenv env in
-      let offset = match env s with
-          | VarEntry {offset; _} -> offset
-          | _ -> raise (Err "internal error") in
-      output := !output ^ "\tmovq %rax, " ^ (string_of_int offset) ^ "(%rbp)\n" ^ code
+  | VarDecInit (t, s, e) -> 
+    let code = trans_exp e nest tenv env in
+    let offset = match env s with
+        | VarEntry {offset; ty; _} -> 
+            if ty != (Semant.type_exp e env) then raise (Semant.TypeErr "type error in variable initialization");
+            offset
+        | _ -> raise (Err "internal error") in
+    output := !output ^ "\tmovq %rax, " ^ (string_of_int offset) ^ "(%rbp)\n" ^ code
    (* 型宣言の処理 *)
  | TypeDec (s,t) -> 
       let entry = tenv s in
