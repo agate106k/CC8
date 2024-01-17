@@ -13,14 +13,14 @@
         i = 3;
         i += a;
 
-	do {
-                r = m - (m / n) * n;
+        do {
+        r = m - (m / n) * n;
+        m = n;
+        n = r;
+        } while (r > 0);
 
-                m = n;
-                n = r;
-	} while (r > 0)
         sprint ("Answer = ");
-        iprint (i) ;
+        iprint (i);
         sprint ("\n");
 
 }
