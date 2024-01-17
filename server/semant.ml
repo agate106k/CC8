@@ -97,6 +97,10 @@ and type_stmt ast env =
                     raise (TypeErr "type error in += operation")
           | If (e,_,_) -> type_cond e env
           | While (e,_) -> type_cond e env
+          | For (v, e1, e2, s) ->
+               if (type_exp (VarExp (Var v)) env) != INT || (type_exp e1 env) != INT || (type_exp e2 env) != INT then
+                   raise (TypeErr "type error in for statement")
+               else type_stmt s env
           | NilStmt -> ()
 and type_var ast env =
        match ast with

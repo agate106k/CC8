@@ -44,6 +44,8 @@ rule lexer = parse
 | ','                     { COMMA }
 | ';'                     { SEMI }
 | "++"                    { INCREMENT }
+| "for"                   { FOR }
+| ".."                    { DOTDOT }
 | [' ' '\t' '\n']         { lexer lexbuf }(* eat up whitespace *) 
 | eof                     { raise End_of_file }
 | _                       { raise No_such_symbol }

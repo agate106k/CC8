@@ -11,6 +11,7 @@ open Ast
 %token INT IF WHILE SPRINT IPRINT SCAN EQ NEQ GT LT GE LE ELSE RETURN NEW
 %token PLUS MINUS TIMES DIV LB RB LS RS LP RP ASSIGN SEMI COMMA TYPE VOID
 %token PERCENT POW INCREMENT PLUS_ASSIGN
+%token FOR DOTDOT
 %type <Ast.stmt> prog
 
 
@@ -65,6 +66,7 @@ stmt : ID ASSIGN expr SEMI    { Assign (Var $1, $3) }
      | IF LP cond RP stmt ELSE stmt 
                               { If ($3, $5, Some $7) }
      | WHILE LP cond RP stmt  { While ($3, $5) }
+     | FOR LP ID ASSIGN expr DOTDOT expr RP stmt { For ($3, $5, $7, $9) }
      | SPRINT LP STR RP SEMI  { CallProc ("sprint", [StrExp $3]) }
      | IPRINT LP expr RP SEMI { CallProc ("iprint", [$3]) }
      | SCAN LP ID RP SEMI  { CallProc ("scan", [VarExp (Var $3)]) }
