@@ -14,6 +14,7 @@ and exp = VarExp of var | StrExp of string | IntExp of int
 and dec = FuncDec of id * ((typ*id) list) * typ * stmt
         | TypeDec of id * typ
         | VarDec of typ * id
+        | VarDecInit of typ * string * exp
 and typ = NameTyp of string
         | ArrayTyp of int * typ
         | IntTyp
