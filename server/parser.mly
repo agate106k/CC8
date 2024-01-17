@@ -66,7 +66,7 @@ stmt : ID ASSIGN expr SEMI    { Assign (Var $1, $3) }
      | IF LP cond RP stmt ELSE stmt 
                               { If ($3, $5, Some $7) }
      | WHILE LP cond RP stmt  { While ($3, $5) }
-     | FOR ID ASSIGN expr DOTDOT expr LP stmt RP SEMI { For ($2, $4, $6, $8) }
+     | FOR ID ASSIGN expr DOTDOT expr stmt { For ($2, $4, $6, $7) }
      | SPRINT LP STR RP SEMI  { CallProc ("sprint", [StrExp $3]) }
      | IPRINT LP expr RP SEMI { CallProc ("iprint", [$3]) }
      | SCAN LP ID RP SEMI  { CallProc ("scan", [VarExp (Var $3)]) }
