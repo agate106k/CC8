@@ -5,6 +5,7 @@ type token =
   | INT
   | IF
   | WHILE
+  | DO
   | SPRINT
   | IPRINT
   | SCAN
