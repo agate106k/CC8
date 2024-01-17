@@ -1095,7 +1095,7 @@ let
 
   | 33 ->
 # 44 "lexer.mll"
-                          ( Error )
+                          ( ERROR )
 # 1100 "lexer.ml"
 
   | 34 ->

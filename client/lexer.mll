@@ -41,5 +41,5 @@ rule lexer = parse
 | ','                     { COMMA }
 | ';'                     { SEMI }
 | [' ' '\t' '\n']         { lexer lexbuf }(* eat up whitespace *)
-| _                       { Error }
+| _                       { ERROR }
 | eof                     { raise End_of_file }
