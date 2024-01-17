@@ -1,0 +1,23 @@
+{
+	int a, b, m, n, r, p, i;
+        sprint ("You must give 2 integers.\n");
+        sprint ("First integer: ");
+        scan  (a);
+        sprint ("Second integer: ");
+        scan (b);
+        m = a; n = b;
+        r = m - (m / n) * n;
+        m = n;
+        n = r;
+        p = a ^ b;
+        i = 3;
+        i += a;
+
+
+        sprint ("Answer = ");
+        iprint (i) ;
+        sprint ("\n");
+
+}
+
+
