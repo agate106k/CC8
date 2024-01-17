@@ -60,7 +60,7 @@ stmts: stmts stmt  { $1@[$2] }
 
 stmt : ID ASSIGN expr SEMI    { Assign (Var $1, $3) }
      | ID LS expr RS ASSIGN expr SEMI  { Assign (IndexedVar (Var $1, $3), $6) }
-     | error SEMI { print_endline "Syntax error"; Parsing.yyparse () }
+     | error SEMI { print_endline "Syntax error"; NilStmt }
      | IF LP cond RP stmt     { If ($3, $5, None) }
      | IF LP cond RP stmt ELSE stmt 
                               { If ($3, $5, Some $7) }
