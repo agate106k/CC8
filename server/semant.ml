@@ -49,16 +49,32 @@ let rec create_ty ast tenv =
 (* 実引数は，%rbp から +24 のところにある．*)
 let savedARG = 24 (* return address,  static link, old %rbp *)
 
+(* 関数のシグネチャを保持するための環境を定義する *)
+let function_env = ref []
+
+(* 関数のシグネチャを環境に追加する *)
+let enter_function name ret_type arg_types =
+  function_env := (name, ret_type, arg_types) :: !function_env
+
+(* 現在の関数の返戻値の型を取得する *)
+let current_function_return_type () =
+  match !function_env with
+  | (name, ret_type, arg_types) :: _ -> ret_type
+  | [] -> raise (Failure "No function currently being processed")
+
+
 let rec type_dec ast (nest,addr) tenv env =
    match ast with
       (* 関数定義の処理 *)
       FuncDec (s, l, rlt, Block (dl,_)) -> 
-         (* 関数名の記号表への登録 *)
-         check_redecl ((List.map (fun (t,s) -> VarDec (t,s)) l) @ dl) [] [];
-         let env' = update s (FunEntry 
-                                 {formals= 
-                                    List.map (fun (typ,_) -> create_ty typ tenv) l; 
-                                    result=create_ty rlt tenv; level=nest+1}) env in (tenv, env', addr)
+          (* 関数名の記号表への登録 *)
+          check_redecl ((List.map (fun (t,s) -> VarDec (t,s)) l) @ dl) [] [];
+          let formals = List.map (fun (typ,_) -> create_ty typ tenv) l in
+          let result = create_ty rlt tenv in
+          let env' = update s (FunEntry {formals=formals; result=result; level=nest+1}) env in
+          (* 関数のシグネチャを環境に追加 *)
+          enter_function s result formals;
+          (tenv, env', addr)
     (* 変数宣言の処理 *)
     | VarDec (t,s) -> (tenv, 
               update s (VarEntry {ty= create_ty t tenv; offset=addr-8; level=nest}) env, addr-8)
@@ -81,7 +97,21 @@ and type_stmt ast env =
           | CallProc ("iprint", [arg]) -> 
                     if (type_exp arg env) != INT then
                           raise (TypeErr "iprint requires int value")
-          | CallProc ("return", [arg]) -> () (* result type should be checked *)
+                    (* return 文の型チェックを行う *)
+          | CallProc ("return", [arg]) ->
+               let current_fun_type = current_function_return_type () in
+               let arg_type = type_exp arg env in
+               match current_fun_type with
+               | UNIT ->
+                    if arg_type != UNIT then
+                         raise (TypeErr "return expression in a void function should not return a value")
+               | _ ->
+                    if actual_ty arg_type != actual_ty current_fun_type then
+                         raise (TypeErr "return expression type does not match function return type")
+               | CallProc ("return", []) ->
+               let current_fun_type = current_function_return_type () in
+               if current_fun_type != UNIT then
+                    raise (TypeErr "non-void function must return a value")
           | CallProc ("sprint", _) -> ()
           | CallProc ("new", [VarExp (Var s)]) -> let entry = env s in 
                     (match entry with
