@@ -1,26 +1,23 @@
 {
-<<<<<<< HEAD
-	int a, b, m, n, r, p, i;
-        r = 3;
-        i = 2;
-        a = 3;
-        do {
-                i += a;
-                r = r - 1;         
-        } while (r > 0);
-
-        sprint ("Answer = ");
-        iprint (i);
-=======
-	int i, k;
-        i = 1;
-        k = i++;
-
-        sprint ("Answer k= ");
-        iprint (k);
-        sprint ("Answer i= ");
-        iprint (i) ;
->>>>>>> main
+	int i, k, result;
+        int sum() {
+                int total;
+                total = 100;
+        }
+        void zzsum() {
+                int total;
+                total = 100;
+        }
+        void ffsum() {
+                int total;
+                total = 100;
+                return total;
+        }
+        result = 100;
+        sum();
+        zzsum();
+        result = ffsum();
+        iprint (result);
         sprint ("\n");
 }
 

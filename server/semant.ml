@@ -98,20 +98,22 @@ and type_stmt ast env =
                     if (type_exp arg env) != INT then
                           raise (TypeErr "iprint requires int value")
                     (* return 文の型チェックを行う *)
-          | CallProc ("return", [arg]) ->
-               let current_fun_type = current_function_return_type () in
-               let arg_type = type_exp arg env in
-               match current_fun_type with
-               | UNIT ->
-                    if arg_type != UNIT then
-                         raise (TypeErr "return expression in a void function should not return a value")
-               | _ ->
-                    if actual_ty arg_type != actual_ty current_fun_type then
-                         raise (TypeErr "return expression type does not match function return type")
-               | CallProc ("return", []) ->
-               let current_fun_type = current_function_return_type () in
-               if current_fun_type != UNIT then
-                    raise (TypeErr "non-void function must return a value")
+          | CallProc ("return", []) ->
+                     let current_fun_type = current_function_return_type () in
+                     if current_fun_type != UNIT then
+                          raise (TypeErr "non-void function must return a value")
+          | CallProc ("return", args) ->
+                    let current_fun_type = current_function_return_type () in
+                    (match args, current_fun_type with
+                     | [], UNIT -> ()  (* void関数のreturn文のチェック *)
+                     | [arg], _ ->  (* 値を返すreturn文のチェック *)
+                         let arg_type = type_exp arg env in
+                         if actual_ty arg_type != actual_ty current_fun_type then
+                             raise (TypeErr "return expression type does not match function return type")
+                     | [], _ ->  (* non-void関数が値を返さない場合のチェック *)
+                         raise (TypeErr "non-void function must return a value")
+                     | _ -> raise (Err "invalid return statement"))
+
           | CallProc ("sprint", _) -> ()
           | CallProc ("new", [VarExp (Var s)]) -> let entry = env s in 
                     (match entry with
@@ -122,9 +124,6 @@ and type_stmt ast env =
           | Block (dl, _) -> check_redecl dl [] []
           | Assign (v, e) -> 
                if (type_var v env) != (type_exp e env) then raise (TypeErr "type error 4")
-          | Assign (v, CallFunc ("+", [VarExp (Var v1); e])) -> 
-               if (type_exp (VarExp (Var v1)) env) != INT || (type_exp e env) != INT then 
-                    raise (TypeErr "type error in += operation")
           | If (e,_,_) -> type_cond e env
           | DoWhile (s, e) ->
                (* (check_int (type_exp e env); type_stmt s env) *)
