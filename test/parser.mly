@@ -10,8 +10,9 @@ open Ast
 %token <string> STR ID
 %token INT IF WHILE SPRINT IPRINT SCAN EQ NEQ GT LT GE LE ELSE RETURN NEW
 %token PLUS MINUS TIMES DIV LB RB LS RS LP RP ASSIGN SEMI COMMA TYPE VOID
+%token ERROR
 %type <Ast.stmt> prog
-
+%type <Ast.stmt> error_stmt
 
 %nonassoc GT LT EQ NEQ GE LE
 %left PLUS MINUS         /* lowest precedence */
@@ -56,8 +57,11 @@ fargs: fargs COMMA ty ID     { $1@[($3,$4)] }
 stmts: stmts stmt  { $1@[$2] }
      | stmt        { [$1] }
      ;
-
+error_stmt:
+  | ERROR { print_endline "Syntax error detected"; ErrorFlag.set_error (); NilStmt }
+  ;
 stmt : ID ASSIGN expr SEMI    { Assign (Var $1, $3) }
+     | error_stmt          { $1 }
      | ID LS expr RS ASSIGN expr SEMI  { Assign (IndexedVar (Var $1, $3), $6) }
      | IF LP cond RP stmt     { If ($3, $5, None) }
      | IF LP cond RP stmt ELSE stmt 

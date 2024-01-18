@@ -9,8 +9,8 @@
         r = m - (m / n) * n;
         m = n;
         n = r;
-        // fafa
-        // testksks
+        fafa
+        testksks
         sprint ("Answer = ");
         iprint (m) ;
         sprint ("\n");

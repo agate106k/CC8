@@ -1,14 +1,15 @@
-FILE = parser.mly lexer.mll ast.ml
+FILE = parser.mly lexer.mll ast.ml ErrorFlag.ml
 
 print_ast: $(FILE) print_ast.ml
 	ocamlyacc parser.mly
 	ocamllex lexer.mll
 	ocamlc -c ast.ml
 	ocamlc -c parser.mli
+	ocamlc -c ErrorFlag.ml
 	ocamlc -c lexer.ml
 	ocamlc -c parser.ml
 	ocamlc -c print_ast.ml
-	ocamlc -o print_ast unix.cma ast.cmo lexer.cmo parser.cmo print_ast.cmo
+	ocamlc -o print_ast unix.cma ast.cmo ErrorFlag.cmo lexer.cmo parser.cmo print_ast.cmo
 
 clean:
 	rm  -f *.cmi *.cmo parser.ml lexer.ml parser.mli print_ast
