@@ -89,6 +89,7 @@ block: LB decs stmts RB  { Block ($2, $3) }
 
 expr : NUM { IntExp $1  }
     | ID { VarExp (Var $1) }
+    | ID INCREMENT { IncExp (Var $1) }
     | ID LP aargs_opt RP { CallFunc ($1, $3) } 
     | ID LS expr RS  { VarExp (IndexedVar (Var $1, $3)) }
     | expr PLUS expr { CallFunc ("+", [$1; $3]) }
@@ -97,7 +98,6 @@ expr : NUM { IntExp $1  }
     | expr DIV expr { CallFunc ("/", [$1; $3]) }
     | expr PERCENT expr { CallFunc ("%", [$1; $3]) }  /* %追加 */
     | expr POW expr { CallFunc ("^", [$1; $3]) }
-    | ID INCREMENT { CallFunc ("++", [VarExp (Var $1)]) }
     | MINUS expr %prec UMINUS { CallFunc("!", [$2]) }
     | LP expr RP  { $2 }
     ;
