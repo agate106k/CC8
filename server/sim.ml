@@ -10,7 +10,7 @@ let main () =
           (* コード生成 *)
           let code = Emitter.trans_prog (Parser.prog Lexer.lexer lexbuf) in
              (* 生成コードの書出しとファイルのクローズ *)
-             output_string file code; close_out file;     
+             output_string file code; close_out file; 
              (* アセンブラとリンカの呼出し *)
              let _ = Unix.system "gcc tmp.s" in () ;;                
 

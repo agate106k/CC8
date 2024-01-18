@@ -96,6 +96,9 @@ and type_stmt ast env =
                if (type_exp (VarExp (Var v1)) env) != INT || (type_exp e env) != INT then 
                     raise (TypeErr "type error in += operation")
           | If (e,_,_) -> type_cond e env
+          | DoWhile (s, e) ->
+               (* (check_int (type_exp e env); type_stmt s env) *)
+               type_cond e env
           | While (e,_) -> type_cond e env
           | NilStmt -> ()
 and type_var ast env =
