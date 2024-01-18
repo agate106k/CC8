@@ -31,9 +31,7 @@ rule lexer = parse
 | '+'                     { PLUS }
 | '-'                     { MINUS }
 | '*'                     { TIMES }
-| '%'                     { PERCENT }
 | '/'                     { DIV }
-| '^'             　　　　　{ POW }
 | '{'                     { LB  }
 | '}'                     { RB  }
 | '['                     { LS }
@@ -42,7 +40,6 @@ rule lexer = parse
 | ')'                     { RP  }
 | ','                     { COMMA }
 | ';'                     { SEMI }
-| "++"                    { INCREMENT }
-| [' ' '\t' '\n']         { lexer lexbuf }(* eat up whitespace *) 
+| [' ' '\t' '\n']         { lexer lexbuf }(* eat up whitespace *)
+| _ as c { Printf.eprintf "Unexpected character %c\n" c; ErrorFlag.set_error (); ERROR }
 | eof                     { raise End_of_file }
-| _                       { raise No_such_symbol }
