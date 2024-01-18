@@ -8,7 +8,7 @@ open Ast
 /* File parser.mly */
 %token <int> NUM
 %token <string> STR ID
-%token INT IF WHILE SPRINT IPRINT SCAN EQ NEQ GT LT GE LE ELSE RETURN NEW
+%token INT IF WHILE DO SPRINT IPRINT SCAN EQ NEQ GT LT GE LE ELSE RETURN NEW
 %token PLUS MINUS TIMES DIV LB RB LS RS LP RP ASSIGN SEMI COMMA TYPE VOID
 %token PERCENT POW INCREMENT PLUS_ASSIGN
 %token FOR DOTDOT
@@ -65,6 +65,7 @@ stmt : ID ASSIGN expr SEMI    { Assign (Var $1, $3) }
      | IF LP cond RP stmt     { If ($3, $5, None) }
      | IF LP cond RP stmt ELSE stmt 
                               { If ($3, $5, Some $7) }
+     | DO stmt WHILE LP cond RP SEMI { DoWhile ($2, $5) }
      | WHILE LP cond RP stmt  { While ($3, $5) }
      | FOR ID ASSIGN expr DOTDOT expr stmt { For ($2, $4, $6, $7) }
      | SPRINT LP STR RP SEMI  { CallProc ("sprint", [StrExp $3]) }
@@ -90,6 +91,7 @@ block: LB decs stmts RB  { Block ($2, $3) }
 
 expr : NUM { IntExp $1  }
     | ID { VarExp (Var $1) }
+    | ID INCREMENT { IncExp (Var $1) }
     | ID LP aargs_opt RP { CallFunc ($1, $3) } 
     | ID LS expr RS  { VarExp (IndexedVar (Var $1, $3)) }
     | expr PLUS expr { CallFunc ("+", [$1; $3]) }
@@ -98,7 +100,6 @@ expr : NUM { IntExp $1  }
     | expr DIV expr { CallFunc ("/", [$1; $3]) }
     | expr PERCENT expr { CallFunc ("%", [$1; $3]) }  /* %追加 */
     | expr POW expr { CallFunc ("^", [$1; $3]) }
-    | ID INCREMENT { CallFunc ("++", [VarExp (Var $1)]) }
     | MINUS expr %prec UMINUS { CallFunc("!", [$2]) }
     | LP expr RP  { $2 }
     ;
@@ -109,5 +110,6 @@ cond : expr EQ expr  { CallFunc ("==", [$1; $3]) }
      | expr LT expr  { CallFunc ("<", [$1; $3]) }
      | expr GE expr  { CallFunc (">=", [$1; $3]) }
      | expr LE expr  { CallFunc ("<=", [$1; $3]) }
+     | error { failwith "Error in cond rule" }
      ;
 %%

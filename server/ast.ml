@@ -8,10 +8,12 @@ and stmt = Assign of var * exp
         | Block of (dec list) * (stmt list)
         | If of exp * stmt * (stmt option)
         | For of id * exp * exp * stmt
+        | DoWhile of stmt * exp
         | While of exp * stmt
         | NilStmt
 and exp = VarExp of var | StrExp of string | IntExp of int 
         | CallFunc of id * (exp list)
+        | IncExp of var
 and dec = FuncDec of id * ((typ*id) list) * typ * stmt
         | TypeDec of id * typ
         | VarDec of typ * id

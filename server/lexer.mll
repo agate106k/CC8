@@ -13,6 +13,7 @@ rule lexer = parse
 | "for"                   { FOR }
 | ".."                    { DOTDOT}
 | "else"                  { ELSE }
+| "do"                    { DO }
 | "while"                 { WHILE }
 | "scan"                  { SCAN }
 | "sprint"                { SPRINT }
