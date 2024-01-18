@@ -42,8 +42,11 @@ rule lexer = parse
 | ','                     { COMMA }
 | ';'                     { SEMI }
 | "//"                    { comment lexbuf }
-and comment = parse
 | ['\n']                  { incr line; Lexing.new_line lexbuf; lexer lexbuf }
 | [' ' '\t']              { lexer lexbuf }
 | eof                     { raise End_of_file }
 | _                       { raise No_such_symbol }
+and comment = parse
+  | '\n' { incr line; Lexing.new_line lexbuf; lexer lexbuf }
+  | _    { comment lexbuf }
+  | eof { raise End_of_file }
