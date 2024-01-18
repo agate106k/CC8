@@ -5,3 +5,5 @@ lexer.ml
 parser.mli
 simc
 print_ast
+tmp.s
+a.out

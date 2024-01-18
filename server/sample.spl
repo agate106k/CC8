@@ -1,20 +1,8 @@
 {
 	int a, b, m, n, r, p, i;
-        sprint ("You must give 2 integers.\n");
-        sprint ("First integer: ");
-        scan  (a);
-        sprint ("Second integer: ");
-        scan (b);
-        m = a; n = b;
-        r = m - (m / n) * n;
-        m = n;
-        n = r;
-        p = a ^ b;
-        iprint (a);
-        iprint (r);
-        i = 3;
-        i += a;
-
+        r = 3;
+        i = 2;
+        a = 3;
         do {
                 i += a;
                 r = r - 1;         
@@ -23,7 +11,6 @@
         sprint ("Answer = ");
         iprint (i);
         sprint ("\n");
-
 }
 
 
