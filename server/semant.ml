@@ -96,6 +96,9 @@ and type_stmt ast env =
                if (type_exp (VarExp (Var v1)) env) != INT || (type_exp e env) != INT then 
                     raise (TypeErr "type error in += operation")
           | If (e,_,_) -> type_cond e env
+          | DoWhile (s, e) ->
+               (* (check_int (type_exp e env); type_stmt s env) *)
+               type_cond e env
           | While (e,_) -> type_cond e env
           | NilStmt -> ()
 and type_var ast env =
@@ -113,6 +116,7 @@ and type_exp ast env =
         match ast with
             VarExp s -> type_var s env
           | IntExp i -> INT
+          | IncExp v -> (check_int (type_exp (VarExp v) env); INT)
           | CallFunc ("+", [left; right]) -> 
                (check_int (type_exp left env); check_int(type_exp right env); INT)
           | CallFunc ("-", [left; right]) -> 
@@ -125,8 +129,6 @@ and type_exp ast env =
                (check_int (type_exp left env); check_int(type_exp right env); INT)
           | CallFunc ("^", [base; exponent]) -> 
                (check_int (type_exp base env); check_int(type_exp exponent env); INT)
-          | CallFunc ("++", [VarExp v]) -> 
-               (check_int (type_exp (VarExp v) env); INT)
           | CallFunc ("!", [arg]) -> 
                (check_int (type_exp arg env); INT)
           | CallFunc (s, el) -> 
