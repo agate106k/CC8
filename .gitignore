@@ -1,0 +1,7 @@
+*.cmi
+*.cmo
+parser.ml
+lexer.ml
+parser.mli
+simc
+print_ast

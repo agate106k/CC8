@@ -185,10 +185,12 @@ and trans_exp ast nest env = match ast with
                            ^ "\tmovq (%rax), %rax\n"
                            ^ "\tpushq %rax\n"
                   | IncExp v ->
-                            trans_var v nest env
-                           ^ "\tmovq (%rax), %rax\n"
-                           ^ "\tpushq %rax\n"
-                           ^ "\ttaddq $1, (%rax)\n"
+                           trans_var v nest env
+                           ^ "\tmovq (%rax), %rbx\n"  (* 値を一時的なレジスタに保存 *)
+                           ^ "\taddq $1, %rbx\n"  (* 値を増加させる *)
+                           ^ "\tmovq %rbx, (%rax)\n"  (* 値を元の位置に保存 *)
+                           ^ "\tsubq $1, %rbx\n"  (* 元の値を復元 *)
+                           ^ "\tpushq %rbx\n"  (* 元の値をスタックにプッシュ *)
                   (* +のコード *)
                   | CallFunc ("+", [left; right]) -> 
                                              trans_exp left nest env
