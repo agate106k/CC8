@@ -11,7 +11,7 @@ rule lexer = parse
 | digit+ as num  { NUM (int_of_string num) }
 | "if"                    { IF }
 | "for"                   { FOR }
-| ".."                    { DOTDOT}
+| ".."                    { DOTDOT }
 | "else"                  { ELSE }
 | "do"                    { DO }
 | "while"                 { WHILE }

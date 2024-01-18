@@ -99,9 +99,13 @@ and type_stmt ast env =
                type_cond e env
           | While (e,_) -> type_cond e env
           | For (v, e1, e2, s) ->
-               if (type_exp (VarExp (Var v)) env) != INT || (type_exp e1 env) != INT || (type_exp e2 env) != INT then
+               let var_type = type_exp (VarExp (Var v)) env in
+               let e1_type = type_exp e1 env in
+               let e2_type = type_exp e2 env in
+               if var_type != INT || e1_type != INT || e2_type != INT then
                raise (TypeErr "type error in for statement")
-               else type_stmt s env
+               else
+               type_stmt s env
           | NilStmt -> ()
 and type_var ast env =
        match ast with

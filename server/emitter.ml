@@ -172,16 +172,18 @@ and trans_stmt ast nest tenv env =
                           ^ sprintf "L%d:\n" l1 *)
                           | For (v, e1, e2, s) ->
                             trans_stmt (Assign(Var v, e1)) nest tenv env
-                            ^ let (condCode, l1) = trans_cond (CallFunc ("!=", [(VarExp (Var v)); e2])) nest env in
-                            let l2 = incLabel() in sprintf "L%d:" l2
-                            ^ condCode
+                            ^ let l_start = incLabel() in
+                              let l_end = incLabel() in
+                              sprintf "L%d:\n" l_start
+                            ^ let (condCode, _) = trans_cond (CallFunc ("!=", [(VarExp (Var v)); e2])) nest env in
+                              condCode
                             ^ trans_stmt s nest tenv env
                             ^ trans_exp (IncExp(Var v)) nest env
-                            ^ "\tmovq (%rax), %rbx\n"  (* 値を一時的なレジスタに保存 *)
-                            ^ "\taddq $1, %rbx\n"  (* 値を増加させる *)
-                            ^ "\tmovq %rbx, (%rax)\n"  (* 値を元の位置に保存 *)
-                            ^ sprintf "\tjmp L%d\n" l2
-                            ^ sprintf "L%d:\n" l1
+                            ^ "\tmovq (%rax), %rbx\n"
+                            ^ "\taddq $1, %rbx\n"
+                            ^ "\tmovq %rbx, (%rax)\n"
+                            ^ sprintf "\tjmp L%d\n" l_start
+                            ^ sprintf "L%d:\n" l_end
                   | NilStmt -> ""
 (* 参照アドレスの処理 *)
 and trans_var ast nest env = match ast with
