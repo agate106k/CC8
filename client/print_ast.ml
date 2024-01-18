@@ -58,5 +58,7 @@ let main () =
     exit 1  (* Exit with an error code *)
 
 (* Execute the main function *)
-let _ = main ()
+let _ =
+         main ();
+         if ErrorFlag.check_error () then exit 1
 
