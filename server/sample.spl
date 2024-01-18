@@ -4,19 +4,14 @@
                 int total;
                 total = 100;
         }
-        void zzsum() {
+        void sums() {
                 int total;
                 total = 100;
-        }
-        void ffsum() {
-                int total;
-                total = 100;
-                return total;
         }
         result = 100;
-        sum();
-        zzsum();
-        result = ffsum();
+        result = sum();
+
+
         iprint (result);
         sprint ("\n");
 }
