@@ -1,26 +1,18 @@
 {
-<<<<<<< HEAD
-	int a, b, m, n, r, p, i;
-        r = 3;
-        i = 2;
-        a = 3;
-        do {
-                i += a;
-                r = r - 1;         
-        } while (r > 0);
+	int i, k, result;
+        int sum() {
+                int total;
+                total = 100;
+        }
+        void sums() {
+                int total;
+                total = 100;
+        }
+        result = 100;
+        result = sum();
 
-        sprint ("Answer = ");
-        iprint (i);
-=======
-	int i, k;
-        i = 1;
-        k = i++;
 
-        sprint ("Answer k= ");
-        iprint (k);
-        sprint ("Answer i= ");
-        iprint (i) ;
->>>>>>> main
+        iprint (result);
         sprint ("\n");
 }
 

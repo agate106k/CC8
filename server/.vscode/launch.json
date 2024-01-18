@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/owner/Desktop/doujous/CC/CC8/server",
+      "program": "/Users/owner/Desktop/doujous/CC/CC8/server/build/Debug/outDebug"
+    }
+  ]
+}
