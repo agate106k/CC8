@@ -41,7 +41,9 @@ rule lexer = parse
 | ')'                     { RP  }
 | ','                     { COMMA }
 | ';'                     { SEMI }
+| "//"                    { comment lexbuf }
+and comment = parse
 | ['\n']                  { incr line; Lexing.new_line lexbuf; lexer lexbuf }
-| [' ' '\t']              { lexer lexbuf }(* eat up whitespace *) 
+| [' ' '\t']              { lexer lexbuf }
 | eof                     { raise End_of_file }
 | _                       { raise No_such_symbol }
