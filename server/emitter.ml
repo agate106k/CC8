@@ -184,6 +184,11 @@ and trans_exp ast nest env = match ast with
                              trans_var v nest env
                            ^ "\tmovq (%rax), %rax\n"
                            ^ "\tpushq %rax\n"
+                  | IncExp v ->
+                            trans_var v nest env
+                           ^ "\tmovq (%rax), %rax\n"
+                           ^ "\tpushq %rax\n"
+                           ^ "\ttaddq $1, (%rax)\n"
                   (* +のコード *)
                   | CallFunc ("+", [left; right]) -> 
                                              trans_exp left nest env
@@ -219,13 +224,6 @@ and trans_exp ast nest env = match ast with
                     ^ "\tjne L_loop\n"
                     ^ "L_end:\n"
                     ^ "\tpushq %rcx\n"
-                  (* ++のコード *)
-                  | CallFunc ("++", [VarExp v]) ->
-                      trans_var v nest env
-                    ^ "\tmovq (%rax), %rbx\n"
-                    ^ "\tincq %rbx\n"
-                    ^ "\tmovq %rbx, (%rax)\n"
-                    ^ "\tpushq %rbx\n"
                   (* /のコード *)
                   
                   | CallFunc ("/", [left; right]) ->
