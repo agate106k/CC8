@@ -161,26 +161,27 @@ and trans_stmt ast nest tenv env =
                                        ^ trans_stmt s nest tenv env
                                        ^ sprintf "\tjmp L%d\n" l2
                                        ^ sprintf "L%d:\n" l1
-                  | For (v, e1, e2, s) ->
-                                        let l1 = incLabel() in
-                                        let l2 = incLabel() in
-                                        let l3 = incLabel() in
-                                        (trans_exp e1 nest env
-                                          ^ trans_var (Var v) nest env
-                                          ^ "\tpopq (%rax)\n"
-                                          ^ sprintf "L%d:\n" l1
-                                          ^ trans_exp e2 nest env
-                                          ^ trans_var (Var v) nest env
-                                          ^ "\tpopq %rax\n"
-                                          ^ "\tcmpq (%rax), %rbx\n"
-                                          ^ sprintf "\tjg L%d\n" l2
-                                          ^ trans_stmt s nest tenv env
-                                          ^ sprintf "L%d:\n" l3
-                                          ^ trans_var (Var v) nest env
-                                          ^ "\tincq (%rax)\n"
-                                          ^ sprintf "\tjmp L%d\n" l1
-                                          ^ sprintf "L%d:\n" l2)
-
+                  (* | For (v, e1, e2, s) ->
+                          
+                          trans_stmt (Assign(Var v, e1)) nest tenv env
+                          ^ let (condCode, l1) = trans_cond (CallFunc ("!=", [(VarExp (Var v)); e2])) nest env in let l2 = incLabel() in sprintf "L%d:" l2
+                          ^ condCode
+                          ^ trans_stmt s nest tenv env
+                          ^ trans_stmt (ExpStmt (IncExp(Var v))) nest tenv env
+                          ^ sprintf "\tjmp L%d\n" l2
+                          ^ sprintf "L%d:\n" l1 *)
+                          | For (v, e1, e2, s) ->
+                            trans_stmt (Assign(Var v, e1)) nest tenv env
+                            ^ let (condCode, l1) = trans_cond (CallFunc ("!=", [(VarExp (Var v)); e2])) nest env in
+                            let l2 = incLabel() in sprintf "L%d:" l2
+                            ^ condCode
+                            ^ trans_stmt s nest tenv env
+                            ^ trans_exp (IncExp(Var v)) nest env
+                            ^ "\tmovq (%rax), %rbx\n"  (* 値を一時的なレジスタに保存 *)
+                            ^ "\taddq $1, %rbx\n"  (* 値を増加させる *)
+                            ^ "\tmovq %rbx, (%rax)\n"  (* 値を元の位置に保存 *)
+                            ^ sprintf "\tjmp L%d\n" l2
+                            ^ sprintf "L%d:\n" l1
                   | NilStmt -> ""
 (* 参照アドレスの処理 *)
 and trans_var ast nest env = match ast with
