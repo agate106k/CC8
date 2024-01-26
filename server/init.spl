@@ -1,4 +1,8 @@
 {
-    int s = 0;
-    iprint(s);
+   int x, rlt;
+   rlt = 1;
+   for x = 0 .. 5 {
+      rlt = x;
+   }
+   iprint(rlt);
 }

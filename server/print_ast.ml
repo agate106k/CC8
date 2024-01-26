@@ -18,6 +18,8 @@ let rec ast_stmt ast =
   | If (e, s1, Some s2) ->
       sprintf "If(%s,%s,Some %s)" (ast_exp e) (ast_stmt s1) (ast_stmt s2)
   | While (e, s) -> sprintf "While(%s,%s)" (ast_exp e) (ast_stmt s)
+  | For (id, start_exp, end_exp, body_stmt) ->
+    sprintf "For(\"%s\",%s,%s,%s)" id (ast_exp start_exp) (ast_exp end_exp) (ast_stmt body_stmt)
   | NilStmt -> "NilStmt"
 
 and ast_var ast =
