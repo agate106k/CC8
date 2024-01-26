@@ -34,6 +34,7 @@ and ast_dec ast =
            "" l)
         (ast_typ t) (ast_stmt b)
   | VarDec (t, s) -> sprintf "VarDec(%s,\"%s\")" (ast_typ t) s
+  | InitVarDec (t, s, e) -> sprintf "InitVarDec(%s,\"%s\",%s)" (ast_typ t) s (ast_exp e)
   | TypeDec (s, t) -> sprintf "TypeDec (\"%s\",%s)" s (ast_typ t)
 
 and ast_exp ast =
