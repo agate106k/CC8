@@ -49,16 +49,36 @@ let rec create_ty ast tenv =
 (* 実引数は，%rbp から +24 のところにある．*)
 let savedARG = 24 (* return address,  static link, old %rbp *)
 
-let rec type_dec ast (nest,addr) tenv env =
+(* 関数のシグネチャを保持するための環境を定義する *)
+let function_env = ref []
+
+(* 関数のシグネチャを環境に追加する *)
+let enter_function name ret_type arg_types =
+  function_env := (name, ret_type, arg_types) :: !function_env
+
+(* 現在の関数の返戻値の型を取得する *)
+let current_function_return_type () =
+  match !function_env with
+  | (name, ret_type, arg_types) :: _ -> ret_type
+  | [] -> raise (Failure "No function currently being processed")
+
+
+let rec type_dec ast (nest, addr) tenv env =
    match ast with
       (* 関数定義の処理 *)
-      FuncDec (s, l, rlt, Block (dl,_)) -> 
-         (* 関数名の記号表への登録 *)
-         check_redecl ((List.map (fun (t,s) -> VarDec (t,s)) l) @ dl) [] [];
-         let env' = update s (FunEntry 
-                                 {formals= 
-                                    List.map (fun (typ,_) -> create_ty typ tenv) l; 
-                                    result=create_ty rlt tenv; level=nest+1}) env in (tenv, env', addr)
+      FuncDec (s, l, rlt, Block (dl,sl)) -> 
+      (* 関数名の記号表への登録 *)
+      check_redecl ((List.map (fun (t,s) -> VarDec (t,s)) l) @ dl) [] [];
+      let formals = List.map (fun (typ,_) -> create_ty typ tenv) l in
+      let result = create_ty rlt tenv in
+      let env' = update s (FunEntry {formals=formals; result=result; level=nest+1}) env in
+      (* 関数のシグネチャを環境に追加 *)
+      enter_function s result formals;
+      (* 関数本体のステートメントリストに対する型チェックを追加 *)
+      let has_return = List.exists (function CallProc ("return", _) -> true | _ -> false) sl in
+      if actual_ty result != UNIT && not has_return then
+          raise (TypeErr "function must have a return statement");
+      (tenv, env', addr)
     (* 変数宣言の処理 *)
     | VarDec (t,s) -> (tenv, 
               update s (VarEntry {ty= create_ty t tenv; offset=addr-8; level=nest}) env, addr-8)
@@ -81,7 +101,24 @@ and type_stmt ast env =
           | CallProc ("iprint", [arg]) -> 
                     if (type_exp arg env) != INT then
                           raise (TypeErr "iprint requires int value")
-          | CallProc ("return", [arg]) -> () (* result type should be checked *)
+                    (* return 文の型チェックを行う *)
+          | CallProc ("return", []) ->
+                     let current_fun_type = current_function_return_type () in
+                     if current_fun_type != UNIT then
+                          raise (TypeErr "non-void function must return a value")
+          (* return 文の型チェックを行う *)
+          | CallProc ("return", args) ->
+          let current_fun_type = current_function_return_type () in
+          (match args, current_fun_type with
+               | [], UNIT -> ()  (* void関数のreturn文のチェック *)
+               | [arg], _ ->  (* 値を返すreturn文のチェック *)
+               let arg_type = type_exp arg env in
+               if actual_ty arg_type != actual_ty current_fun_type then
+                    raise (TypeErr "return expression type does not match function return type")
+               | [], _ ->  (* non-void関数が値を返さない場合のチェック *)
+               raise (TypeErr "non-void function must return a value")
+               | _ -> raise (Err "invalid return statement"))
+
           | CallProc ("sprint", _) -> ()
           | CallProc ("new", [VarExp (Var s)]) -> let entry = env s in 
                     (match entry with
