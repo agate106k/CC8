@@ -162,12 +162,6 @@ and trans_stmt ast nest tenv env =
                                        ^ sprintf "\tjmp L%d\n" l2
                                        ^ sprintf "L%d:\n" l1
                   (* 空文 *)
-                  | Assign (Var v, CallFunc ("+", [VarExp (Var v1); e])) when v = v1 -> 
-                    trans_exp e nest env
-                    ^ trans_var (Var v) nest env
-                    ^ "\tpopq %rbx\n"
-                    ^ "\taddq (%rax), %rbx\n"
-                    ^ "\tmovq %rbx, (%rax)\n"
                   | NilStmt -> ""
 (* 参照アドレスの処理 *)
 and trans_var ast nest env = match ast with

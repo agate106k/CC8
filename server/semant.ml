@@ -92,9 +92,6 @@ and type_stmt ast env =
           | Block (dl, _) -> check_redecl dl [] []
           | Assign (v, e) -> 
                if (type_var v env) != (type_exp e env) then raise (TypeErr "type error 4")
-          | Assign (v, CallFunc ("+", [VarExp (Var v1); e])) -> 
-               if (type_exp (VarExp (Var v1)) env) != INT || (type_exp e env) != INT then 
-                    raise (TypeErr "type error in += operation")
           | If (e,_,_) -> type_cond e env
           | DoWhile (s, e) ->
                (* (check_int (type_exp e env); type_stmt s env) *)
