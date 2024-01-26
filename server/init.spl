@@ -1,4 +1,4 @@
 {
-  	int a, b, m, n, r, p;
+  	int a;
     int a = 5;
 }
