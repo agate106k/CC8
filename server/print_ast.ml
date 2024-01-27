@@ -20,6 +20,7 @@ let rec ast_stmt ast =
   | While (e, s) -> sprintf "While(%s,%s)" (ast_exp e) (ast_stmt s)
   | For (id, start_exp, end_exp, body_stmt) ->
     sprintf "For(\"%s\",%s,%s,%s)" id (ast_exp start_exp) (ast_exp end_exp) (ast_stmt body_stmt)
+  | DoWhile (s, e) -> sprintf "DoWhile(%s,%s)" (ast_stmt s) (ast_exp e) 
   | NilStmt -> "NilStmt"
 
 and ast_var ast =
@@ -47,7 +48,7 @@ and ast_exp ast =
   | CallFunc (s, l) ->
       sprintf "CallFunc(\"%s\",[%s])" s
         (List.fold_left (fun str x -> semi str ^ ast_exp x) "" l)
-
+  | IncExp v -> sprintf "IncExp(%s)" (ast_var v)
 and ast_typ ast =
   match ast with
   | NameTyp s -> sprintf "NameTyp \"%s\"" s

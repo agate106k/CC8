@@ -165,7 +165,7 @@ and trans_stmt ast nest tenv env =
                                        ^ sprintf "L%d:\n" l1
                                        | For (v, e1, e2, s) ->
                                        trans_stmt (Assign(Var v, e1)) nest tenv env
-                                       ^ let (condCode, l1) = trans_cond (CallFunc ("<=", [(VarExp (Var v)); e2])) nest env in
+                                       ^ let (condCode, l1) = trans_cond (CallFunc ("<", [(VarExp (Var v)); e2])) nest env in
                                        let l2 = incLabel() in sprintf "L%d:\n" l2  (* コロンを追加 *)
                                        ^ condCode
                                        ^ trans_stmt s nest tenv env
@@ -225,21 +225,24 @@ and trans_exp ast nest env = match ast with
                                            ^ "\timulq (%rsp), %rax\n"
                                            ^ "\tmovq %rax, (%rsp)\n"
                   (* ^のコード *)
-                  | CallFunc ("^", [left; right]) ->
-                      trans_exp left nest env
-                    ^ trans_exp right nest env
-                    ^ "\tpopq %rax\n"
-                    ^ "\tpopq %rbx\n"
-                    ^ "\tmovq $1, %rcx\n"
-                    ^ "\tcmpq $0, %rbx\n"
-                    ^ "\tje L_end\n"
-                    ^ "L_loop:\n"
-                    ^ "\timulq %rax, %rcx\n"
-                    ^ "\tdecq %rbx\n"
-                    ^ "\tcmpq $0, %rbx\n"
-                    ^ "\tjne L_loop\n"
-                    ^ "L_end:\n"
-                    ^ "\tpushq %rcx\n"
+| CallFunc ("^", [base; exp]) ->
+    let base_code = trans_exp base nest env in
+    let exp_code = trans_exp exp nest env in
+    let loop_label = incLabel() in
+    let end_label = incLabel() in
+    base_code
+  ^ exp_code
+  ^ "\tpopq %rbx\n"  (* 指数を %rbx に格納 *)
+  ^ "\tpopq %rax\n"  (* 基数を %rax に格納 *)
+  ^ "\tmovq $1, %rcx\n"  (* 結果の初期値を 1 に設定 *)
+  ^ sprintf "L%d:\n" loop_label
+  ^ "\ttestq %rbx, %rbx\n"  (* 指数が 0 かどうかテスト *)
+  ^ sprintf "\tje L%d\n" end_label  (* 0 なら終了ラベルへジャンプ *)
+  ^ "\timulq %rax, %rcx\n"  (* 結果に基数を掛ける *)
+  ^ "\tdecq %rbx\n"  (* 指数をデクリメント *)
+  ^ sprintf "\tjmp L%d\n" loop_label  (* ループラベルへジャンプ *)
+  ^ sprintf "L%d:\n" end_label
+  ^ "\tpushq %rcx\n"  (* 結果をスタックにプッシュ *)
                   (* /のコード *)
                   
                   | CallFunc ("/", [left; right]) ->

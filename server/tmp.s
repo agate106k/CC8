@@ -389,5 +389,28 @@ sort:
 	callq sort
 	addq $16, %rsp
 L9:
+L1:	.string "before sorting\n"
+	.text
+	leaq L1(%rip), %rdi
+	movq $0, %rax
+	callq printf
+	pushq $0
+	pushq %rbp
+	callq print
+	addq $16, %rsp
+	pushq $0
+	pushq %rbp
+	callq sort
+	addq $16, %rsp
+	.data
+L2:	.string "after sorting\n"
+	.text
+	leaq L2(%rip), %rdi
+	movq $0, %rax
+	callq printf
+	pushq $0
+	pushq %rbp
+	callq print
+	addq $16, %rsp
 	leaveq
 	retq

@@ -1,4 +1,0 @@
-{
-   int rlt = 1;
-   iprint(rlt);
-}
