@@ -36,6 +36,8 @@ let rec check_redecl decs tl vl =
                                     else check_redecl rest tl (s::vl) 
        | VarDec (_,s)::rest -> if List.mem s vl then raise (SymErr s)
                                else check_redecl rest tl (s::vl) 
+     | InitVarDec (_,s,_)::rest -> if List.mem s vl then raise (SymErr s)
+                               else check_redecl rest tl (s::vl) 
        | TypeDec (s,_)::rest -> if List.mem s tl then raise (SymErr s)
                                 else check_redecl rest (s::tl) vl 
 (* 型式の生成 *)
@@ -83,6 +85,12 @@ let rec type_dec ast (nest, addr) tenv env =
     | VarDec (t,s) -> (tenv, 
               update s (VarEntry {ty= create_ty t tenv; offset=addr-8; level=nest}) env, addr-8)
     (* 型宣言の処理 *)
+     | InitVarDec (t, s, e) ->
+          let ty = create_ty t tenv in
+          let exp_ty = type_exp e env in
+          if actual_ty ty != actual_ty exp_ty then
+          raise (TypeErr "type mismatch in variable initialization");
+          (tenv, update s (VarEntry {ty=ty; offset=addr-8; level=nest}) env, addr-8)
     | TypeDec (s,t) -> let tenv' = update s (NAME (s,ref None)) tenv in (tenv', env, addr)
     | _ -> raise (Err "internal error")
 and type_decs dl nest tenv env =
