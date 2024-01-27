@@ -39,26 +39,33 @@ let epilogue = "\tleaveq\n"            (* -> movq %ebp, %esp; popl %ebp *)
 
 (* 宣言部の処理：変数宣言->記号表への格納，関数定義->局所宣言の処理とコード生成 *)
 let rec trans_dec ast nest tenv env = match ast with
-   (* 関数定義の処理 *)
-   FuncDec (s, l, _, block) -> 
-       (* 仮引数の記号表への登録 *)
-       let env' =  type_param_dec l (nest+1) tenv env in 
-         (* 関数本体（ブロック）の処理 *)
-         let code = trans_stmt block (nest+1) tenv env' in
-             (* 関数コードの合成 *)
-             output := !output ^
-                 s ^ ":\n"               (* 関数ラベル *)
-                 ^ prologue              (* プロローグ *)
-                 ^ code                  (* 本体コード *)
-                 ^ epilogue              (* エピローグ *)
-   (* 変数宣言の処理 *)
- | VarDec (t,s) -> ()
-   (* 型宣言の処理 *)
- | TypeDec (s,t) -> 
+  (* 関数定義の処理 *)
+  | FuncDec (s, l, _, block) -> 
+      (* 仮引数の記号表への登録 *)
+      let env' = type_param_dec l (nest + 1) tenv env in 
+      (* 関数本体（ブロック）の処理 *)
+      let code = trans_stmt block (nest + 1) tenv env' in
+      (* 関数コードの合成 *)
+      output := !output ^
+                s ^ ":\n"               (* 関数ラベル *)
+                ^ prologue              (* プロローグ *)
+                ^ code                  (* 本体コード *)
+                ^ epilogue;             (* エピローグ *)
+      ""
+  (* 初期化付き変数宣言の処理 *)
+  | InitVarDec (t, s, e) ->
+      let var_code = trans_var (Var s) nest env in
+      let exp_code = trans_exp e nest env in
+      exp_code ^ var_code ^ "\tpopq (%rax)\n"
+  (* 変数宣言の処理 *)
+  | VarDec (t, s) -> ""
+  (* 型宣言の処理 *)
+  | TypeDec (s, t) -> 
       let entry = tenv s in
-         match entry with
-             (NAME (_, ty_opt)) -> ty_opt := Some (create_ty t tenv)
-           | _ -> raise (Err s)
+      match entry with
+          (NAME (_, ty_opt)) -> ty_opt := Some (create_ty t tenv);
+          ""
+        | _ -> raise (Err s)
 (* 文の処理 *)
 and trans_stmt ast nest tenv env = 
                  type_stmt ast env;
@@ -119,19 +126,12 @@ and trans_stmt ast nest tenv env =
                                ^  sprintf "\taddq $%d, %%rsp\n" ((List.length el + 1 + 1) / 2 * 2 * 8) 
                             | _ -> raise (No_such_symbol s)) 
                   (* ブロックのコード：文を表すブロックは，関数定義を無視する．*)
-                | Block (dl, sl) -> 
-                  let (tenv',env',addr') = type_decs dl nest tenv env in
-                  let init_code = List.fold_left (fun code dec -> match dec with
-                    | InitVarDec (t, s, e) ->
-                      let var_code = trans_var (Var s) nest env' in
-                      let exp_code = trans_exp e nest env' in
-                      code ^ exp_code ^ var_code ^ "\tpopq (%rax)\n"
-                    | _ -> code
-                  ) "" dl in
-                  let ex_frame = sprintf "\tsubq $%d, %%rsp\n" ((-addr'+16)/16*16) in
-                  let code = List.fold_left 
-                    (fun code ast -> (code ^ trans_stmt ast nest tenv' env')) "" sl
-                  in init_code ^ ex_frame ^ code
+                  | Block (dl, sl) -> 
+                      let (tenv', env', addr') = type_decs dl nest tenv env in
+                      let decs_code = List.fold_left (fun code dec -> code ^ trans_dec dec nest tenv' env') "" dl in
+                      let ex_frame = sprintf "\tsubq $%d, %%rsp\n" ((-addr' + 16) / 16 * 16) in
+                      let stmts_code = List.fold_left (fun code stmt -> code ^ trans_stmt stmt nest tenv' env') "" sl in
+                      decs_code ^ ex_frame ^ stmts_code
                                 (* elseなしif文のコード *)
                   | If (e,s,None) -> let (condCode,l) = trans_cond e nest env in
                                                   condCode
