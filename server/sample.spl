@@ -5,10 +5,6 @@
                 total = 100;
                 return total;
         }
-        void sums() {
-                int total;
-                total = 100;
-        }
         result = 100;
         result = sum();
 }
