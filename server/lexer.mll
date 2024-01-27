@@ -47,7 +47,7 @@ rule lexer = parse
 | ','                     { COMMA }
 | ';'                     { SEMI }
 | "++"                    { INCREMENT }
-
+| "//" [^ '\n']*          { lexer lexbuf } (* handle single line comments *)
 | [' ' '\t' '\n']         { lexer lexbuf }(* eat up whitespace *) 
 | eof                     { raise End_of_file }
 | _                       { raise No_such_symbol }

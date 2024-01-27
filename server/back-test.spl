@@ -1,0 +1,46 @@
+{
+    int x, a, b, c;
+    int rlt = 1;
+    a = 5;
+    b = 3;
+    c = 2;
+
+    // '%' 演算子のテスト
+    rlt = a % b;
+    iprint(rlt); // 期待される出力: 2
+    sprint("\n");
+    // '^' 演算子のテスト
+    rlt = a ^ c;
+    iprint(rlt); // 期待される出力: 25
+    sprint("\n");
+    // '++' 演算子のテスト
+    iprint(a); // 期待される出力: 5
+    sprint("\n");
+    rlt = a++;
+    iprint(rlt); // 期待される出力: 5
+    sprint("\n");
+    iprint(a);   // 期待される出力: 6
+    sprint("\n");
+    // '+=' 文のテスト
+    rlt += a;
+    iprint(rlt); // 期待される出力: 11
+    sprint("\n");
+    // 'do ... while' 文のテスト
+    iprint(a); // 期待される出力: 6
+    sprint("\n");
+    rlt = 1;
+    do {
+        rlt += a;
+    } while (rlt < 10);
+    iprint(rlt); // 期待される出力: 13
+    sprint("\n");
+    // 'for' 文のテスト
+    rlt = 1;
+    for (x = 0 .. 5)
+        rlt = rlt * 3;
+    iprint(rlt); // 期待される出力: 243
+    sprint("\n");
+    // 型検査のテスト
+    // この部分はコンパイル時に型検査を行うため、実行時の出力はありません。
+    // 関数の定義と呼び出しを含むテストケースを作成し、型が一致しない場合にコンパイラがエラーを出すことを確認してください。
+}

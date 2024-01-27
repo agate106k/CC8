@@ -1,8 +1,9 @@
-{
-	int i, k, result;
+{	
+        int i, k, result;
         int sum() {
                 int total;
                 total = 100;
+                return total;
         }
         void sums() {
                 int total;
@@ -10,10 +11,6 @@
         }
         result = 100;
         result = sum();
-
-
-        iprint (result);
-        sprint ("\n");
 }
 
 
