@@ -14,7 +14,8 @@ main:
 	movq %rbp, %rax
 	leaq -8(%rax), %rax
 	popq (%rax)
-L2:	movq %rbp, %rax
+L2:
+	movq %rbp, %rax
 	leaq -8(%rax), %rax
 	movq (%rax), %rax
 	pushq %rax
@@ -22,7 +23,7 @@ L2:	movq %rbp, %rax
 	popq %rax
 	popq %rbx
 	cmpq %rax, %rbx
-	je L1
+	jg L1
 	subq $16, %rsp
 	movq %rbp, %rax
 	leaq -8(%rax), %rax
@@ -38,9 +39,6 @@ L2:	movq %rbp, %rax
 	movq %rbx, (%rax)
 	subq $1, %rbx
 	pushq %rbx
-	movq (%rax), %rbx
-	addq $1, %rbx
-	movq %rbx, (%rax)
 	jmp L2
 L1:
 	movq %rbp, %rax

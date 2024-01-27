@@ -74,7 +74,7 @@ stmt : ID ASSIGN expr SEMI    { Assign (Var $1, $3) }
      | NEW LP ID RP SEMI   { CallProc ("new", [ VarExp (Var $3)]) }
      | ID LP aargs_opt RP SEMI  { CallProc ($1, $3) }
      | RETURN expr SEMI    { CallProc ("return", [$2]) }
-     | FOR ID ASSIGN expr DOTDOT expr stmt { For ($2, $4, $6, $7) }
+     | FOR LP ID ASSIGN expr DOTDOT expr RP stmt { For ($3, $5, $7, $9) }
      | block { $1 }
      | SEMI { NilStmt }
      ;
