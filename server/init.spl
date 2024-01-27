@@ -1,10 +1,8 @@
 {
-  	int a, b, m, n, r, p;
-    int a = 5;
-    int b = 10;
-    int result = a % b;
-
-    sprint ("The result of a % b is: ");
-    iprint (result);
-    sprint ("\n");
+   int x, rlt;
+   rlt = 1;
+   for x = 0 .. 5 {
+      rlt = x;
+   }
+   iprint(rlt);
 }
