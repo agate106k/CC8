@@ -119,18 +119,20 @@ and trans_stmt ast nest tenv env =
                                ^  sprintf "\taddq $%d, %%rsp\n" ((List.length el + 1 + 1) / 2 * 2 * 8) 
                             | _ -> raise (No_such_symbol s)) 
                   (* ブロックのコード：文を表すブロックは，関数定義を無視する．*)
-                  | Block (dl, sl) -> 
-                       (* ブロック内宣言の処理 *)
-                       let (tenv',env',addr') = type_decs dl nest tenv env in
-                             List.iter (fun d -> trans_dec d nest tenv' env') dl;
-                             (* フレームの拡張 *)
-                             let ex_frame = sprintf "\tsubq $%d, %%rsp\n" ((-addr'+16)/16*16) in
-                                  (* 本体（文列）のコード生成 *)
-                                  let code = List.fold_left 
-                                       (fun code ast -> (code ^ trans_stmt ast nest tenv' env')) "" sl
-                                  (* 局所変数分のフレーム拡張の付加 *)
-                                  in ex_frame ^ code
-                  (* elseなしif文のコード *)
+                | Block (dl, sl) -> 
+                  let (tenv',env',addr') = type_decs dl nest tenv env in
+                  let init_code = List.fold_left (fun code dec -> match dec with
+                    | InitVarDec (t, s, e) ->
+                      let var_code = trans_var (Var s) nest env' in
+                      let exp_code = trans_exp e nest env' in
+                      code ^ exp_code ^ var_code ^ "\tpopq (%rax)\n"
+                    | _ -> code
+                  ) "" dl in
+                  let ex_frame = sprintf "\tsubq $%d, %%rsp\n" ((-addr'+16)/16*16) in
+                  let code = List.fold_left 
+                    (fun code ast -> (code ^ trans_stmt ast nest tenv' env')) "" sl
+                  in init_code ^ ex_frame ^ code
+                                (* elseなしif文のコード *)
                   | If (e,s,None) -> let (condCode,l) = trans_cond e nest env in
                                                   condCode
                                                 ^ trans_stmt s nest tenv env
