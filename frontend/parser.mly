@@ -58,7 +58,7 @@ stmts: stmts stmt  { $1@[$2] }
      | stmt        { [$1] }
      ;
 error_stmt:
-  | ERROR { print_endline "Syntax error detected"; ErrorFlag.set_error (); NilStmt }
+  | ERROR { print_endline "Syntax error detected";  NilStmt }
   ;
 stmt : ID ASSIGN expr SEMI    { Assign (Var $1, $3) }
      | error_stmt          { $1 }
