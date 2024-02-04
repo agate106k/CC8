@@ -1,0 +1,20 @@
+{	
+        int i, k, result, total;
+        void sumvoid() {
+                total = 300;
+        }
+        int sum() {
+                int total;
+                total = 100;
+                return total;
+        }
+        result = 100;
+        result = sum();
+        iprint(result); // 期待される出力: 100
+        sprint("\n");
+        sumvoid();
+        iprint(total); // 期待される出力: 300
+        sprint("\n");
+}
+
+

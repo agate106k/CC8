@@ -1,12 +1,13 @@
 {	
-        int i, k, result;
+        int i, k, result, total;
         int sum() {
                 int total;
                 total = 100;
-                return total;
         }
         result = 100;
         result = sum();
+        iprint(result);
+        sprint("\n");
 }
 
 

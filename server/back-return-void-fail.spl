@@ -1,0 +1,12 @@
+{	
+        int i, k, result, total;
+        void sumvoid() {
+                total = 300;
+                return total;
+        }
+        sumvoid();
+        iprint(total);
+        sprint("\n");
+}
+
+
