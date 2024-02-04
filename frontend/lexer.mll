@@ -41,15 +41,7 @@ rule lexer = parse
 | ')'                     { RP  }
 | ','                     { COMMA }
 | ';'                     { SEMI }
-| "//"                    { comment lexbuf }
 | ['\n']                  { incr line; Lexing.new_line lexbuf; lexer lexbuf }
 | [' ' '\t']              { lexer lexbuf }
 | eof                     { raise End_of_file }
 
-| _ {
-    ERROR (* ERRORトークンを返す *)
-  }
-and comment = parse
-  | '\n' { incr line; Lexing.new_line lexbuf; lexer lexbuf }
-  | _    { comment lexbuf }
-  | eof { raise End_of_file }
