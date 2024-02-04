@@ -163,7 +163,7 @@ and trans_stmt ast nest tenv env =
                                        ^ trans_stmt s nest tenv env
                                        ^ sprintf "\tjmp L%d\n" l2
                                        ^ sprintf "L%d:\n" l1
-                                       | For (v, e1, e2, s) ->
+                  | For (v, e1, e2, s) ->
                                        trans_stmt (Assign(Var v, e1)) nest tenv env
                                        ^ let (condCode, l1) = trans_cond (CallFunc ("<", [(VarExp (Var v)); e2])) nest env in
                                        let l2 = incLabel() in sprintf "L%d:\n" l2  (* コロンを追加 *)

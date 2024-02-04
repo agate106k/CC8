@@ -139,7 +139,6 @@ and type_stmt ast env =
                if (type_var v env) != (type_exp e env) then raise (TypeErr "type error 4")
           | If (e,_,_) -> type_cond e env
           | DoWhile (s, e) ->
-               (* (check_int (type_exp e env); type_stmt s env) *)
                type_cond e env
           | While (e,_) -> type_cond e env
           | For (v, e1, e2, s) ->
